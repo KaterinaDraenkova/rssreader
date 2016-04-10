@@ -5,13 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends ListActivity {
 
-    public final static String EXTRA_NEWSITEM = "katerina.rssreader.MESSAGE";
+    public final static String EXTRA_NEWSITEM = "katerina.rssreader.NEWSITEMS";
+    private final static String URL = "http://www.dailytechinfo.org/engine/rss.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +22,20 @@ public class MainActivity extends ListActivity {
         getListView().setDividerHeight(5);
 
         ArrayList<NewsItem> items = new ArrayList<>();
+        items = getItemsFake(items);
+
+        loadRSS();
+
+        RSSArrayAdapter adapter = new RSSArrayAdapter(this, items);
+        setListAdapter(adapter);
+    }
+
+    private void loadRSS() {
+        RSSLoaderTask task = new RSSLoaderTask();
+        task.execute(URL);
+    }
+
+    private ArrayList<NewsItem> getItemsFake(ArrayList<NewsItem> items) {
         NewsItem item = NewsItem.getBuilder()
                 .setTitle("Jack")
                 .setGuid("www.www.com")
@@ -29,7 +45,7 @@ public class MainActivity extends ListActivity {
                 .build();
         items.add(item);
         item = NewsItem.getBuilder()
-                .setTitle("Jon")
+                .setTitle("John")
                 .setGuid("www.qwerty.ru")
                 .setLink("www.qwerty.ru")
                 .setDescription("Booooooooooooooooooooob")
@@ -44,9 +60,7 @@ public class MainActivity extends ListActivity {
                 .setCategory("ggg")
                 .build();
         items.add(item);
-
-        RSSArrayAdapter adapter = new RSSArrayAdapter(this, items);
-        setListAdapter(adapter);
+        return items;
     }
 
     @Override

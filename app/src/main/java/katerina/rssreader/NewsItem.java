@@ -12,8 +12,10 @@ public class NewsItem implements Serializable {
     private String mLink;
     private String mDescription;
     private String mCategory;
+    private String mDcCreator;
+    private String mPubDate;
 
-    private NewsItem() {
+    public NewsItem() {
     }
 
     public String getTitle() {
@@ -34,6 +36,22 @@ public class NewsItem implements Serializable {
 
     public String getCategory() {
         return mCategory;
+    }
+
+    public String getDcCreator() {
+        return mDcCreator;
+    }
+
+    public String getPubDate() {
+        return mPubDate;
+    }
+
+    public void setTitle(String mTitle) {
+        this.mTitle = mTitle;
+    }
+
+    public void setPubDate(String mPubDate) {
+        this.mPubDate = mPubDate;
     }
 
     public static Builder getBuilder() {
@@ -67,6 +85,16 @@ public class NewsItem implements Serializable {
 
         public Builder setCategory(String category) {
             mCategory = category;
+            return this;
+        }
+
+        public Builder setDcCreator(String dcCreator) {
+            mDcCreator = dcCreator;
+            return this;
+        }
+
+        public Builder setPubDate(String pubDate) {
+            mPubDate = pubDate;
             return this;
         }
 
