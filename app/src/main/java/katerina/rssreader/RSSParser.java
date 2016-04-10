@@ -36,68 +36,119 @@ public class RSSParser {
 
         int eventType = xpp.getEventType();
         NewsItem newsItem = null;
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "EEE, DD MMM yyyy HH:mm:ss Z");
+        NewsItem.Builder newsBuilder = null;
+
+//        SimpleDateFormat dateFormat = new SimpleDateFormat(
+//                "EEE, DD MMM yyyy HH:mm:ss Z");
+//        // format the data here, otherwise format data in
+//        // Adapter
+//        Date postDate = dateFormat.parse(newsItem.getPubDate());
+//        newsItem.setPubDate(dateFormat.format(postDate));
+
         while (eventType != XmlPullParser.END_DOCUMENT) {
             if (eventType == XmlPullParser.START_DOCUMENT) {
 
             } else if (eventType == XmlPullParser.START_TAG) {
                 if (xpp.getName().equals("item")) {
-                    newsItem = new NewsItem();
+                    newsBuilder = NewsItem.getBuilder();
                     mCurrentTag = RSSXMLTag.IGNORETAG;
-                } else if (xpp.getName().equals("title")) {
-                    mCurrentTag = RSSXMLTag.TITLE;
-                } else if (xpp.getName().equals("link")) {
-                    mCurrentTag = RSSXMLTag.LINK;
-                } else if (xpp.getName().equals("pubDate")) {
-                    mCurrentTag = RSSXMLTag.PUBDATE;
-                }
-            } else if (eventType == XmlPullParser.END_TAG) {
-                if (xpp.getName().equals("item")) {
-                    // format the data here, otherwise format data in
-                    // Adapter
-                    Date postDate = dateFormat.parse(newsItem.getPubDate());
-                    newsItem.setPubDate(dateFormat.format(postDate));
-                    news.add(newsItem);
-                } else {
-                    mCurrentTag = RSSXMLTag.IGNORETAG;
-                }
+                } else if (newsBuilder != null) {
+                    if (xpp.getName().equals("title")) {
+                        mCurrentTag = RSSXMLTag.TITLE;
+                    } else if (xpp.getName().equals("guid")) {
+                        mCurrentTag = RSSXMLTag.GUID;
+                    } else if (xpp.getName().equals("link")) {
+                        mCurrentTag = RSSXMLTag.LINK;
+                    } else if (xpp.getName().equals("description")) {
+                        mCurrentTag = RSSXMLTag.DESCRIPTION;
+                    } else if (xpp.getName().equals("category")) {
+                        mCurrentTag = RSSXMLTag.CATEGORY;
+                    } else if (xpp.getName().equals("dc:creater")) {
+                        mCurrentTag = RSSXMLTag.DCCREATOR;
+                    } else if (xpp.getName().equals("pubDate")) {
+                        mCurrentTag = RSSXMLTag.PUBDATE;
+                    }
+                } else { mCurrentTag = RSSXMLTag.IGNORETAG; }
             } else if (eventType == XmlPullParser.TEXT) {
                 String content = xpp.getText();
                 content = content.trim();
                 Log.d("debug", content);
-                if (newsItem != null) {
+                if (newsBuilder != null) {
                     switch (mCurrentTag) {
                         case TITLE:
                             if (content.length() != 0) {
-                                if (newsItem.getTitle() != null) {
-                                    newsItem.setTitle(newsItem.getTitle() + content);
+                                if (newsBuilder.getTitle() != null) {
+                                    newsBuilder.setTitle(newsItem.getTitle() + content);
                                 } else {
-                                    newsItem.setTitle(content);
+                                    newsBuilder.setTitle(content);
+                                }
+                            }
+                            break;
+                        case GUID:
+                            if (content.length() != 0) {
+                                if (newsBuilder.getGuid() != null) {
+                                    newsBuilder.setGuid(newsItem.getGuid() + content);
+                                } else {
+                                    newsBuilder.setGuid(content);
                                 }
                             }
                             break;
                         case LINK:
                             if (content.length() != 0) {
-//                                if (newsItem.postLink != null) {
-//                                    newsItem.postLink += content;
-//                                } else {
-//                                    newsItem.postLink = content;
-//                                }
+                                if (newsBuilder.getLink() != null) {
+                                    newsBuilder.setLink(newsItem.getLink() + content);
+                                } else {
+                                    newsBuilder.setLink(content);
+                                }
+                            }
+                            break;
+                        case DESCRIPTION:
+                            if (content.length() != 0) {
+                                if (newsBuilder.getDescription() != null) {
+                                    newsBuilder.setDescription(newsItem.getDescription() + content);
+                                } else {
+                                    newsBuilder.setDescription(content);
+                                }
+                            }
+                            break;
+                        case CATEGORY:
+                            if (content.length() != 0) {
+                                if (newsBuilder.getCategory() != null) {
+                                    newsBuilder.setCategory(newsItem.getCategory() + content);
+                                } else {
+                                    newsBuilder.setCategory(content);
+                                }
+                            }
+                            break;
+                        case DCCREATOR:
+                            if (content.length() != 0) {
+                                if (newsBuilder.getDcCreator() != null) {
+                                    newsBuilder.setDcCreator(newsItem.getDcCreator() + content);
+                                } else {
+                                    newsBuilder.setDcCreator(content);
+                                }
                             }
                             break;
                         case PUBDATE:
                             if (content.length() != 0) {
-//                                if (newsItem.postDate != null) {
-//                                    newsItem.postDate += content;
-//                                } else {
-//                                    newsItem.postDate = content;
-//                                }
+                                if (newsBuilder.getPubDate() != null) {
+                                    newsBuilder.setPubDate(newsItem.getPubDate() + content);
+                                } else {
+                                    newsBuilder.setPubDate(content);
+                                }
                             }
                             break;
                         default:
                             break;
                     }
+                }
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if ((xpp.getName().equals("item")) && (newsBuilder != null)) {
+                    newsItem = newsBuilder.build();
+                    news.add(newsItem);
+                    newsBuilder = null;
+                } else {
+                    mCurrentTag = RSSXMLTag.IGNORETAG;
                 }
             }
 
