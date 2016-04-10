@@ -1,4 +1,4 @@
-package katerina.rssreader;
+package katerina.rssreader.network;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
@@ -13,6 +13,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.ArrayList;
+
+import katerina.rssreader.model.NewsItem;
+import katerina.rssreader.utils.RSSParser;
 
 /**
  * Created by Katerina on 10.4.16.

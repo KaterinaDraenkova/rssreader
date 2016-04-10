@@ -1,4 +1,4 @@
-package katerina.rssreader;
+package katerina.rssreader.model;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ public class NewsItem implements Serializable {
     private String mDescription;
     private String mCategory;
     private String mDcCreator;
-    private String mPubDate;
+    private String mPubDate;  // "EEE, DD MMM yyyy HH:mm:ss Z"
 
     private NewsItem() {
     }

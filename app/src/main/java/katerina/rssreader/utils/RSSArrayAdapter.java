@@ -1,4 +1,4 @@
-package katerina.rssreader;
+package katerina.rssreader.utils;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import katerina.rssreader.R;
+import katerina.rssreader.model.NewsItem;
 
 /**
  * Created by Katerina on 9.4.16.

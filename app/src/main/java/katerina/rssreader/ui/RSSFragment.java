@@ -1,4 +1,4 @@
-package katerina.rssreader;
+package katerina.rssreader.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,21 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import katerina.rssreader.model.NewsItem;
+import katerina.rssreader.R;
+import katerina.rssreader.utils.RSSArrayAdapter;
+import katerina.rssreader.network.RSSLoader;
+
 /**
  * Created by Katerina on 10.4.16.
  */
 public class RSSFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<ArrayList<NewsItem>> {
+        implements LoaderManager.LoaderCallbacks<ArrayList<NewsItem>>,
+        SwipeRefreshLayout.OnRefreshListener {
+
+    @Bind(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
 
     private Loader<ArrayList<NewsItem>> mLoader;
     private ArrayList<NewsItem> mNews;
@@ -27,6 +38,7 @@ public class RSSFragment extends ListFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
+        ButterKnife.bind(this, view);
         return view;
     }
 
@@ -34,10 +46,9 @@ public class RSSFragment extends ListFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getListView().setDividerHeight(5);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         mNews = new ArrayList<>();
-        mNews = getItemsFake(mNews);
 
         setListAdapter(mAdapter);
 
@@ -69,6 +80,7 @@ public class RSSFragment extends ListFragment
         mNews = data;
         mAdapter = new RSSArrayAdapter(getContext(), mNews);
         setListAdapter(mAdapter);
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -76,32 +88,8 @@ public class RSSFragment extends ListFragment
         getLoaderManager().restartLoader(MainActivity.LOADER_ID, null, this);
     }
 
-    private ArrayList<NewsItem> getItemsFake(ArrayList<NewsItem> items) {
-        NewsItem item = NewsItem.getBuilder()
-                .setTitle("Jack")
-                .setGuid("www.www.com")
-                .setLink("www.www.com")
-                .setDescription("Ryyyyyyyyyyyyyyyyyyyyyyyyyyyzhiy")
-                .setCategory("qqq")
-                .build();
-        items.add(item);
-        item = NewsItem.getBuilder()
-                .setTitle("John")
-                .setGuid("www.qwerty.ru")
-                .setLink("www.qwerty.ru")
-                .setDescription("Booooooooooooooooooooob")
-                .setCategory("ttt")
-                .build();
-        items.add(item);
-        item = NewsItem.getBuilder()
-                .setTitle("Bob")
-                .setGuid("www.olololo.by")
-                .setLink("www.olololo.by")
-                .setDescription("Siiiiiiiiiimbak")
-                .setCategory("ggg")
-                .build();
-        items.add(item);
-        return items;
+    @Override
+    public void onRefresh() {
+        mLoader.forceLoad();
     }
-
 }
