@@ -13,7 +13,7 @@ import java.io.ObjectOutputStream;
  */
 public final class InternalStorage {
 
-    public static final String KEY = "CACHED_NEWS";
+    public static final String NEWS_KEY = "CACHED_NEWS";
 
     private InternalStorage() {}
 

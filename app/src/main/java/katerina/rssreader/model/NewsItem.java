@@ -1,6 +1,11 @@
 package katerina.rssreader.model;
 
+import android.text.Html;
+import android.text.Spanned;
+
 import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Katerina on 9.4.16.
@@ -14,6 +19,8 @@ public class NewsItem implements Serializable {
     private String mCategory;
     private String mDcCreator;
     private String mPubDate;  // "EEE, DD MMM yyyy HH:mm:ss Z"
+
+    private String mImageLink;
 
     private NewsItem() {
     }
@@ -30,8 +37,8 @@ public class NewsItem implements Serializable {
         return mLink;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public Spanned getDescription() {
+        return Html.fromHtml(mDescription);
     }
 
     public String getCategory() {
@@ -44,6 +51,10 @@ public class NewsItem implements Serializable {
 
     public String getPubDate() {
         return mPubDate;
+    }
+
+    public String getImageLink() {
+        return mImageLink;
     }
 
     public static Builder getBuilder() {
@@ -71,8 +82,25 @@ public class NewsItem implements Serializable {
         }
 
         public Builder setDescription(String description) {
+            String img = "";
+            Pattern p = Pattern.compile("<img src=.*/>");
+            Matcher m = p.matcher(description);
+            while (m.find()) { // Find each match in turn; String can't do this.
+                img = m.group(0); // Access a submatch group; String can't do this.
+            }
+
+            description = description.replaceAll(img, "");
             mDescription = description;
-            return this;
+
+            String imageLink = "";
+            p = Pattern.compile("src=\"[^\"]*\"");
+            m = p.matcher(img);
+            while (m.find()) { // Find each match in turn; String can't do this.
+                imageLink = m.group(0); // Access a submatch group; String can't do this.
+            }
+            imageLink = imageLink.replaceAll("\"", "");
+            imageLink = imageLink.replaceAll("src=", "");
+            return setImageLink(imageLink);
         }
 
         public Builder setCategory(String category) {
@@ -87,6 +115,11 @@ public class NewsItem implements Serializable {
 
         public Builder setPubDate(String pubDate) {
             mPubDate = pubDate;
+            return this;
+        }
+
+        public Builder setImageLink(String imageLink) {
+            mImageLink = imageLink;
             return this;
         }
 
@@ -116,6 +149,10 @@ public class NewsItem implements Serializable {
 
         public String getPubDate() {
             return mPubDate;
+        }
+
+        public String getImageLink() {
+            return mImageLink;
         }
 
         public NewsItem build() {

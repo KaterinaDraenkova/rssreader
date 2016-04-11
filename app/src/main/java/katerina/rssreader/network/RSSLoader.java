@@ -69,7 +69,7 @@ public class RSSLoader extends AsyncTaskLoader<ArrayList<NewsItem>> {
     private void caching(ArrayList<NewsItem> news) {
         try {
             // Save the list of news to internal storage
-            InternalStorage.writeObject(getContext(), InternalStorage.KEY, news);
+            InternalStorage.writeObject(getContext(), InternalStorage.NEWS_KEY, news);
         } catch (IOException e) {
             e.printStackTrace();
         }

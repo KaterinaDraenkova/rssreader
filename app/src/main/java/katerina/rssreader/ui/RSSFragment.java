@@ -52,7 +52,7 @@ public class RSSFragment extends ListFragment
 
         try {
             // Retrieve the list from internal storage
-            mNews = (ArrayList<NewsItem>) InternalStorage.readObject(getContext(), InternalStorage.KEY);
+            mNews = (ArrayList<NewsItem>) InternalStorage.readObject(getContext(), InternalStorage.NEWS_KEY);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
