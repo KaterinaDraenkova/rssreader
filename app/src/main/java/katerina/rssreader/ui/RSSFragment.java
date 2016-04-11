@@ -12,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import katerina.rssreader.model.NewsItem;
 import katerina.rssreader.R;
+import katerina.rssreader.utils.InternalStorage;
 import katerina.rssreader.utils.RSSArrayAdapter;
 import katerina.rssreader.network.RSSLoader;
 
@@ -48,15 +50,22 @@ public class RSSFragment extends ListFragment
 
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        mNews = new ArrayList<>();
+        try {
+            // Retrieve the list from internal storage
+            mNews = (ArrayList<NewsItem>) InternalStorage.readObject(getContext(), InternalStorage.KEY);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
 
+        if (mNews == null) {
+            mNews = new ArrayList<>();
+        }
+
+        mAdapter = new RSSArrayAdapter(getContext(), mNews);
         setListAdapter(mAdapter);
 
         mLoader = getLoaderManager().initLoader(MainActivity.LOADER_ID, null, this);
         mLoader.forceLoad();
-
-//        mAdapter = new RSSArrayAdapter(getContext(), mNews);
-//        setListAdapter(mAdapter);
     }
 
     @Override
@@ -78,8 +87,10 @@ public class RSSFragment extends ListFragment
     @Override
     public void onLoadFinished(Loader<ArrayList<NewsItem>> loader, ArrayList<NewsItem> data) {
         mNews = data;
-        mAdapter = new RSSArrayAdapter(getContext(), mNews);
-        setListAdapter(mAdapter);
+        if (mNews != null) {
+            mAdapter = new RSSArrayAdapter(getContext(), mNews);
+            setListAdapter(mAdapter);
+        }
         mSwipeRefreshLayout.setRefreshing(false);
     }
 

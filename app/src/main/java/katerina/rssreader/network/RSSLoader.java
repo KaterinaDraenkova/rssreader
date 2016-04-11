@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 import katerina.rssreader.model.NewsItem;
+import katerina.rssreader.utils.InternalStorage;
 import katerina.rssreader.utils.RSSParser;
 
 /**
@@ -52,16 +53,25 @@ public class RSSLoader extends AsyncTaskLoader<ArrayList<NewsItem>> {
             RSSParser rssParser = new RSSParser();
             news = rssParser.parse(is);
 
-        } catch (MalformedURLException e) {
+        } catch (MalformedURLException | ParseException | XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (XmlPullParserException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
+        }
+
+        if (news != null) {
+            caching(news);
         }
 
         return news;
+    }
+
+    private void caching(ArrayList<NewsItem> news) {
+        try {
+            // Save the list of news to internal storage
+            InternalStorage.writeObject(getContext(), InternalStorage.KEY, news);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

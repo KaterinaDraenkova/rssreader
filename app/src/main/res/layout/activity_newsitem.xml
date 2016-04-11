@@ -10,7 +10,7 @@
         android:layout_height="match_parent">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="230dp"
+            android:layout_height="@dimen/newsitem_image_height"
             android:layout_marginBottom="3dp" >
 
             <ImageView
@@ -25,11 +25,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="#80000000"
+                android:background="@color/titleAlpha"
                 android:gravity="center"
-                android:padding="5dp"
+                android:padding="@dimen/newsitem_title_padding"
                 android:text="TextView"
-                android:textColor="#fff" />
+                android:textColor="@color/titleTextColor" />
         </RelativeLayout>
         <TextView
             android:id="@+id/description"
